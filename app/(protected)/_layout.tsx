@@ -1,5 +1,17 @@
-import { Stack } from "expo-router";
+import AuthContext from "@/context/AuthContext";
+import { Redirect, Stack } from "expo-router";
+import React, { useContext } from "react";
 
-export default function RootLayout() {
-  return <Stack />;
-}
+const ProtectedLayout = () => {
+	const { isAuthenticated } = useContext(AuthContext);
+	if (!isAuthenticated) {
+		return <Redirect href={"/(auth)/Register"} />;
+	}
+	return (
+		<Stack>
+			<Stack.Screen name="(tabs)" />
+		</Stack>
+	);
+};
+
+export default ProtectedLayout;
