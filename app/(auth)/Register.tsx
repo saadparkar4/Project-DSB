@@ -71,7 +71,7 @@ const Register = () => {
       <TextInput
         placeholder="Password"
         style={styles.input}
-        onChangeText={(text) => setPassword(tex)}
+        onChangeText={(text) => setPassword(text)}
       />
 
       <TouchableOpacity onPress={handleRegister} style={styles.submitButton}>
