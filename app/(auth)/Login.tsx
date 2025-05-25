@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 export default function Index() {
-  const [username, setUsername] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   //   const [isAuthenticated, setIsAuthenticated] = useContext(AuthContext);
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -21,7 +21,7 @@ export default function Index() {
 
   const { mutate, data } = useMutation({
     mutationKey: ["Login"],
-    mutationFn: () => signin(username, password),
+    mutationFn: () => signin(userName, password),
     onSuccess: () => {
       alert("Ahlan hab!b!...");
       setIsAuthenticated(true);
@@ -64,7 +64,7 @@ export default function Index() {
         <TextInput
           placeholder="Username"
           style={styles.input}
-          onChangeText={(text) => setUsername(text)}
+          onChangeText={(text) => setUserName(text)}
         ></TextInput>
       </View>
 

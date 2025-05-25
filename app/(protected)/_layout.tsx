@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 const ProtectedLayout = () => {
   const { isAuthenticated } = useContext(AuthContext);
   if (!isAuthenticated) {
-    return <Redirect href={"/Login"} />;
+    return <Redirect href={"/(auth)/Login"} />;
   }
   return (
     <Stack>
