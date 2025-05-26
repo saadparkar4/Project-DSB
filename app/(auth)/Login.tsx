@@ -1,5 +1,4 @@
 import { signin } from "@/api/auth";
-import { deleteToken } from "@/api/storage";
 import AuthContext from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useRouter } from "expo-router";
@@ -93,11 +92,6 @@ export default function Index() {
           </Text>
         </View>
       </View>
-      <TouchableOpacity onPress={deleteToken} style={styles.submitButton}>
-        <Text style={{ color: "white", fontWeight: "bold" }}>
-          Bye Bye Hab!b!
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 }

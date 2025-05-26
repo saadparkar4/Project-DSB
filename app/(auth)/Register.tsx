@@ -1,5 +1,4 @@
 import { signup } from "@/api/auth";
-import { deleteToken } from "@/api/storage";
 import AuthContext from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
@@ -81,11 +80,6 @@ const Register = () => {
       <Text>
         Got account, <Link href="/(auth)/Login"> Login Hab!b! </Link>
       </Text>
-      <TouchableOpacity onPress={deleteToken} style={styles.submitButton}>
-        <Text style={{ color: "white", fontWeight: "bold" }}>
-          Bye Bye Hab!b!
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
