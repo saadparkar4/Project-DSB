@@ -8,7 +8,7 @@ const signup = async (username: string, password: string, image: string) => {
   formData.append("image", {
     name: "image.jpg",
     uri: image,
-    type: "image/jpeg",
+    type: "image/*",
   } as any);
 
   const registerUser = {
@@ -36,7 +36,6 @@ const signin = async (username: string, password: string) => {
     password: password,
   };
 
-  console.log("api res : ", username, " ", password);
   const { data } = await mainAPI.post("/auth/login", { username, password });
 
   if (data.token) {
@@ -46,4 +45,10 @@ const signin = async (username: string, password: string) => {
   return data;
 };
 
-export { signin, signup };
+const me = async () => {
+  const { data } = await mainAPI.get("auth/me");
+
+  return data;
+};
+
+export { me, signin, signup };

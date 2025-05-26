@@ -21,7 +21,7 @@ const Register = () => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos", "livePhotos"],
+      mediaTypes: ["images"],
       allowsEditing: false,
       aspect: [1, 1],
       quality: 1,

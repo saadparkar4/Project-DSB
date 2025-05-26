@@ -1,4 +1,4 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet } from "react-native";
@@ -7,7 +7,7 @@ const _layout = () => {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         tabBarStyle: {
           backgroundColor: "white",
           borderTopColor: "blue",
@@ -24,7 +24,7 @@ const _layout = () => {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" color={color} size={size} />
+            <Feather name="home" color={color} size={size} />
           ),
         }}
       />
@@ -33,7 +33,7 @@ const _layout = () => {
         options={{
           title: "Transactions",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" color={color} size={size} />
+            <Feather name="dollar-sign" color={color} size={size} />
           ),
         }}
       />
@@ -42,7 +42,7 @@ const _layout = () => {
         options={{
           title: "Users",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" color={color} size={size} />
+            <Feather name="users" color={color} size={size} />
           ),
         }}
       />
@@ -51,7 +51,7 @@ const _layout = () => {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" color={color} size={size} />
+            <Feather name="user" color={color} size={size} />
           ),
         }}
       />

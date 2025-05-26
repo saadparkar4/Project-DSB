@@ -61,10 +61,11 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: "#000035",
-    width: "60%",
+    width: "40%",
     borderRadius: 20,
     padding: 10,
     alignItems: "center",
+    marginTop: 20,
     marginBottom: 20,
   },
 });
