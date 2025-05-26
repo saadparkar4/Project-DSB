@@ -14,6 +14,7 @@ export default function RootLayout() {
 
   const checkToken = async () => {
     const token = await getToken();
+    
     if (token) {
       setIsAuthenticated(true);
     }
