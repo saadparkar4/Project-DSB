@@ -48,6 +48,7 @@ export default function Index() {
 					style={styles.image}
 				/>
 			</View>
+
 			<View style={styles.viewCenter}>
 				<Text style={{ fontSize: 25, fontWeight: "bold", color: "#000035" }}>Login Hab!b!</Text>
 			</View>

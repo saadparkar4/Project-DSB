@@ -1,9 +1,5 @@
-// we will create the functions responsible for calling the auth endpoints
-
 import mainAPI from ".";
 import { storeToken } from "./storage";
-
-// register
 
 const signup = async (username: string, password: string, image: string) => {
 	const formData = new FormData();
@@ -30,7 +26,6 @@ const signup = async (username: string, password: string, image: string) => {
 	return data;
 };
 
-//login
 const signin = async (username: string, password: string) => {
 	const { data } = await mainAPI.post("/auth/login", {
 		username,
