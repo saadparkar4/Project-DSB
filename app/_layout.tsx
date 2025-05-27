@@ -7,7 +7,7 @@ import { Text, View } from "react-native";
 
 export default function RootLayout() {
   //Create a state to keep track of the user's authentication status
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [ready, setReady] = useState(false);
   // create my query client
   const queryClient = new QueryClient();
