@@ -26,6 +26,7 @@ export const deposit = async (amount: number) => {
 	const { data } = await mainAPI.put("/transactions/deposit", {
 		amount,
 	});
+
 	return data;
 };
 
@@ -33,6 +34,7 @@ export const withdraw = async (amount: number) => {
 	const { data } = await mainAPI.put("/transactions/withdraw", {
 		amount,
 	});
+
 	return data;
 };
 
