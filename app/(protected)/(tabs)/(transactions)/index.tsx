@@ -1,44 +1,37 @@
+import { my } from "@/api/auth";
 import { deleteToken } from "@/api/storage";
-import CategoryCard from "@/components/CategoryCard";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import TransactionCard from "@/components/TransactionCard";
+import { useQuery } from "@tanstack/react-query";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {/* Build, extract, refactor */}
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 80,
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CategoryCard cardTitle="Tips" />
-        <CategoryCard cardTitle="Yoga Videos" />
-        <CategoryCard cardTitle="Music" />
-        <CategoryCard cardTitle="Meditation" />
-      </View>
+  const { data } = useQuery({
+    queryKey: ["transaction"],
+    queryFn: my,
+  });
 
+  return (
+    <ScrollView style={styles.viewCenter}>
+      {data?.map((transaction: any) => (
+        <TransactionCard
+          key={transaction._id}
+          amount={transaction?.amount}
+          date={transaction?.createdAt.slice(0, 10)}
+          type={transaction?.type}
+        />
+      ))}
       <TouchableOpacity onPress={deleteToken} style={styles.submitButton}>
         <Text style={{ color: "white", fontWeight: "bold" }}>
           Bye Bye Hab!b!
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   viewCenter: {
-    alignItems: "center",
+    flex: 1,
   },
   input: {
     borderWidth: 2,
