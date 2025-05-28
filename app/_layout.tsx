@@ -6,40 +6,40 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
 export default function RootLayout() {
-  //Create a state to keep track of the user's authentication status
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [ready, setReady] = useState(false);
-  // create my query client
-  const queryClient = new QueryClient();
+	//Create a state to keep track of the user's authentication status
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [ready, setReady] = useState(false);
+	// create my query client
+	const queryClient = new QueryClient();
 
-  const checkToken = async () => {
-    const token = await getToken();
+	const checkToken = async () => {
+		const token = await getToken();
 
-    if (token) {
-      setIsAuthenticated(true);
-    }
-    setReady(true);
-  };
+		if (token) {
+			setIsAuthenticated(true);
+		}
+		setReady(true);
+	};
 
-  if (!ready) {
-    <View>
-      <Text>LOADING APP</Text>
-    </View>;
-  }
+	if (!ready) {
+		<View>
+			<Text>LOADING APP</Text>
+		</View>;
+	}
 
-  // /Login -> auth/login
-  // useEffect will run the check token code the second my app launches or reloads
+	// /Login -> auth/login
+	// useEffect will run the check token code the second my app launches or reloads
 
-  useEffect(() => {
-    checkToken();
-  }, []);
-  return (
-    // provide my client to the entire app
-    <QueryClientProvider client={queryClient}>
-      {/* Provide the values for the auth context */}
-      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthContext.Provider>
-    </QueryClientProvider>
-  );
+	useEffect(() => {
+		checkToken();
+	}, []);
+	return (
+		// provide my client to the entire app
+		<QueryClientProvider client={queryClient}>
+			{/* Provide the values for the auth context */}
+			<AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+				<Stack screenOptions={{ headerShown: false }} />
+			</AuthContext.Provider>
+		</QueryClientProvider>
+	);
 }
