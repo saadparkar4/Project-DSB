@@ -5,6 +5,17 @@ import { Link, useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+const PRIMARY_COLOR = "#1a237e";
+const BG_COLOR = "#f5f6fa";
+const BORDER_COLOR = "#c5cae9";
+const INPUT_HEIGHT = 48;
+const CONTENT_WIDTH = "85%";
+const BORDER_RADIUS = 16;
+const FONT_SIZE_LABEL = 16;
+const FONT_SIZE_INPUT = 16;
+const FONT_SIZE_TITLE = 28;
+const BUTTON_HEIGHT = 48;
+
 export default function Index() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -32,13 +43,7 @@ export default function Index() {
 	};
 
 	return (
-		<View
-			style={{
-				flex: 1,
-				justifyContent: "center",
-				gap: 20,
-				backgroundColor: "white",
-			}}>
+		<View style={styles.container}>
 			<View style={styles.viewCenter}>
 				<Image
 					source={{
@@ -49,7 +54,7 @@ export default function Index() {
 			</View>
 
 			<View style={styles.viewCenter}>
-				<Text style={{ fontSize: 25, fontWeight: "bold", color: "#000035" }}>Login Hab!b!</Text>
+				<Text style={styles.title}>Login Hab!b!</Text>
 			</View>
 
 			<View style={styles.viewCenter}>
@@ -75,35 +80,75 @@ export default function Index() {
 		</View>
 	);
 }
+
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: BG_COLOR,
+		paddingHorizontal: 16,
+	},
 	viewCenter: {
 		alignItems: "center",
+		width: CONTENT_WIDTH,
 	},
-	input: {
-		borderWidth: 2,
-		width: "60%",
-
-		borderRadius: 20,
-		padding: 10,
+	title: {
+		fontSize: FONT_SIZE_TITLE,
+		fontWeight: "bold",
+		color: PRIMARY_COLOR,
+		marginBottom: 24,
+		textAlign: "center",
 	},
 	inputLabel: {
-		alignItems: "flex-start",
-		width: "60%",
-		padding: 10,
-		fontWeight: "bold",
-		fontSize: 20,
+		alignSelf: "flex-start",
+		fontWeight: "600",
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		marginBottom: 6,
+		marginTop: 12,
+	},
+	input: {
+		borderWidth: 1.5,
+		borderColor: BORDER_COLOR,
+		borderRadius: BORDER_RADIUS,
+		height: INPUT_HEIGHT,
+		width: "100%",
+		paddingHorizontal: 14,
+		fontSize: FONT_SIZE_INPUT,
+		backgroundColor: "#fff",
+		marginBottom: 8,
 	},
 	image: {
-		height: 200,
-		width: 200,
-		alignItems: "center",
+		height: 120,
+		width: 120,
+		borderRadius: 60,
+		marginBottom: 24,
+		alignSelf: "center",
+		backgroundColor: "#e8eaf6",
+		borderWidth: 2,
+		borderColor: BORDER_COLOR,
 	},
 	submitButton: {
-		backgroundColor: "#000035",
-		width: "60%",
-		borderRadius: 20,
-		padding: 10,
+		backgroundColor: PRIMARY_COLOR,
+		width: "100%",
+		height: BUTTON_HEIGHT,
+		borderRadius: BORDER_RADIUS,
 		alignItems: "center",
-		marginBottom: 20,
+		justifyContent: "center",
+		marginTop: 18,
+		marginBottom: 10,
+		elevation: 2,
+	},
+	linkText: {
+		color: PRIMARY_COLOR,
+		fontWeight: "600",
+		fontSize: 15,
+	},
+	footerText: {
+		marginTop: 8,
+		fontSize: 15,
+		color: "#333",
+		textAlign: "center",
 	},
 });

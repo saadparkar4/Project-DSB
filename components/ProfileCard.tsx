@@ -96,46 +96,77 @@ const ProfileCard = ({ username, image, balance }: UserCardProps) => {
 
 export default ProfileCard;
 
+const PRIMARY_COLOR = "#1a237e";
+const BG_COLOR = "#f5f6fa";
+const BORDER_COLOR = "#c5cae9";
+const CONTENT_WIDTH = "85%";
+const BORDER_RADIUS = 16;
+const FONT_SIZE_LABEL = 16;
+const FONT_SIZE_TITLE = 22;
+const BUTTON_HEIGHT = 40;
+
 const styles = StyleSheet.create({
 	viewCenter: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		width: 800,
+		width: CONTENT_WIDTH,
+		backgroundColor: BG_COLOR,
+		borderRadius: BORDER_RADIUS,
+		padding: 20,
+		margin: 10,
 	},
 	input: {
-		borderWidth: 2,
-		width: "60%",
-		borderRadius: 20,
-		padding: 10,
+		borderWidth: 1.5,
+		borderColor: BORDER_COLOR,
+		borderRadius: BORDER_RADIUS,
+		height: 40,
+		width: "100%",
+		paddingHorizontal: 14,
+		fontSize: 16,
+		backgroundColor: "#fff",
+		marginBottom: 8,
 	},
 	username: {
 		padding: 10,
 		fontWeight: "bold",
-		fontSize: 20,
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		alignSelf: "center",
 	},
 	balance: {
 		padding: 10,
 		fontWeight: "bold",
-		fontSize: 20,
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		alignSelf: "center",
 	},
 	textLabel: {
 		padding: 10,
 		fontWeight: "bold",
-		fontSize: 20,
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		alignSelf: "center",
 	},
 	image: {
-		height: 200,
-		width: 200,
-		alignItems: "center",
+		height: 120,
+		width: 120,
+		borderRadius: 60,
+		marginBottom: 16,
+		alignSelf: "center",
+		backgroundColor: "#e8eaf6",
+		borderWidth: 2,
+		borderColor: BORDER_COLOR,
 	},
 	submitButton: {
-		backgroundColor: "#000035",
-		width: "40%",
-		borderRadius: 20,
-		padding: 10,
+		backgroundColor: PRIMARY_COLOR,
+		width: "100%",
+		height: BUTTON_HEIGHT,
+		borderRadius: BORDER_RADIUS,
 		alignItems: "center",
-		marginTop: 20,
-		marginBottom: 20,
+		justifyContent: "center",
+		marginTop: 12,
+		marginBottom: 10,
+		elevation: 2,
 	},
 });

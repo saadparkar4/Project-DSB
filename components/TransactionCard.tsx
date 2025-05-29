@@ -26,30 +26,28 @@ const TransactionCard = ({ transaction, setTransaction, displayTransaction }: Tr
 
 export default TransactionCard;
 
+const PRIMARY_COLOR = "#1a237e";
+const BG_COLOR = "#f5f6fa";
+const BORDER_COLOR = "#c5cae9";
+const BORDER_RADIUS = 16;
+const FONT_SIZE_LABEL = 16;
+
 const styles = StyleSheet.create({
 	viewCenter: {
 		flex: 1,
-		// justifyContent: "center",
 		justifyContent: "space-around",
-		// alignItems: "space-between",
-	},
-	input: {
-		borderWidth: 2,
-		width: "60%",
-		borderRadius: 20,
+		alignItems: "center",
+		backgroundColor: BG_COLOR,
+		borderRadius: BORDER_RADIUS,
+		margin: 10,
 		padding: 10,
-	},
-	username: {
-		padding: 10,
-		fontWeight: "bold",
-		fontSize: 20,
 	},
 	balance: {
-		// width: "30%",
 		padding: 10,
 		fontWeight: "bold",
-		fontSize: 20,
-		gap: 40,
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		textAlign: "center",
 	},
 	textLabel: {
 		padding: 10,

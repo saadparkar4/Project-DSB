@@ -5,6 +5,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+const PRIMARY_COLOR = "#1a237e";
+const BG_COLOR = "#f5f6fa";
+const BORDER_COLOR = "#c5cae9";
+const CONTENT_WIDTH = "85%";
+const BORDER_RADIUS = 16;
+const FONT_SIZE_LABEL = 16;
+const FONT_SIZE_TITLE = 28;
+const BUTTON_HEIGHT = 48;
+
 export default function Index() {
 	const { data, refetch: refetchProfile } = useQuery({
 		queryKey: ["myprofile"],
@@ -143,6 +152,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		gap: 20,
+		backgroundColor: BG_COLOR,
+		paddingHorizontal: 16,
+		width: CONTENT_WIDTH,
+		alignSelf: "center",
 	},
 	balanceCard: {
 		height: "20%",
@@ -159,7 +172,6 @@ const styles = StyleSheet.create({
 		},
 		shadowOpacity: 0.58,
 		shadowRadius: 16.0,
-
 		elevation: 24,
 	},
 	transactionCard: {
@@ -178,7 +190,6 @@ const styles = StyleSheet.create({
 		},
 		shadowOpacity: 0.58,
 		shadowRadius: 16.0,
-
 		elevation: 24,
 	},
 	balanceDetails: {
@@ -186,11 +197,15 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 	},
 	input: {
-		borderWidth: 2,
+		borderWidth: 1.5,
+		borderColor: BORDER_COLOR,
+		borderRadius: BORDER_RADIUS,
+		height: 48,
 		width: "100%",
-
-		borderRadius: 20,
-		padding: 10,
+		paddingHorizontal: 14,
+		fontSize: 16,
+		backgroundColor: "#fff",
+		marginBottom: 8,
 	},
 	inputLabel: {
 		alignItems: "flex-start",
@@ -200,23 +215,30 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 	},
 	image: {
-		height: 200,
-		width: 200,
-		alignItems: "center",
+		height: 120,
+		width: 120,
+		borderRadius: 60,
+		marginBottom: 24,
+		alignSelf: "center",
+		backgroundColor: "#e8eaf6",
+		borderWidth: 2,
+		borderColor: BORDER_COLOR,
 	},
 	submitButton: {
-		backgroundColor: "#000035",
-		width: "40%",
-		borderRadius: 20,
-		padding: 10,
+		backgroundColor: PRIMARY_COLOR,
+		width: "100%",
+		height: BUTTON_HEIGHT,
+		borderRadius: BORDER_RADIUS,
 		alignItems: "center",
-		marginTop: 20,
-		marginBottom: 20,
+		justifyContent: "center",
+		marginTop: 18,
+		marginBottom: 10,
+		elevation: 2,
 	},
 	button: {
-		backgroundColor: "#000035",
+		backgroundColor: PRIMARY_COLOR,
 		width: "100%",
-		borderRadius: 20,
+		borderRadius: BORDER_RADIUS,
 		padding: 10,
 		alignItems: "center",
 		marginTop: 10,

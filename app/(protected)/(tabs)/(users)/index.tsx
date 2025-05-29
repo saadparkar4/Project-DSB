@@ -6,6 +6,15 @@ import UserProfileCard from "@/components/UserProfileCard";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
+const PRIMARY_COLOR = "#1a237e";
+const BG_COLOR = "#f5f6fa";
+const BORDER_COLOR = "#c5cae9";
+const CONTENT_WIDTH = "85%";
+const BORDER_RADIUS = 16;
+const FONT_SIZE_LABEL = 16;
+const FONT_SIZE_TITLE = 28;
+const BUTTON_HEIGHT = 48;
+
 export default function Index() {
 	const { data } = useQuery({
 		queryKey: ["users"],
@@ -27,6 +36,10 @@ export default function Index() {
 const styles = StyleSheet.create({
 	viewCenter: {
 		flex: 1,
+		backgroundColor: BG_COLOR,
+		paddingHorizontal: 16,
+		width: CONTENT_WIDTH,
+		alignSelf: "center",
 	},
 	input: {
 		borderWidth: 2,
@@ -55,12 +68,14 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	submitButton: {
-		backgroundColor: "#000035",
-		width: "40%",
-		borderRadius: 20,
-		padding: 10,
+		backgroundColor: PRIMARY_COLOR,
+		width: "100%",
+		height: BUTTON_HEIGHT,
+		borderRadius: BORDER_RADIUS,
 		alignItems: "center",
-		marginTop: 20,
-		marginBottom: 20,
+		justifyContent: "center",
+		marginTop: 18,
+		marginBottom: 10,
+		elevation: 2,
 	},
 });
