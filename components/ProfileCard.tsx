@@ -1,4 +1,5 @@
 import { me, updateProfile } from "@/api/auth";
+import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
@@ -66,18 +67,25 @@ const ProfileCard = ({ username, image, balance }: UserCardProps) => {
 	return (
 		<View style={styles.viewCenter}>
 			<TouchableOpacity onPress={pickImage} onPressOut={handleToggle}>
-				<Image
-					style={{ borderRadius: 100 }}
-					source={{
-						uri: image ? image : "",
-						height: 200,
-						width: 200,
-					}}
-				/>
+				{image ? (
+					<Image style={{ borderRadius: 100, height: 200, width: 200 }} source={{ uri: image }} />
+				) : (
+					<View
+						style={{
+							borderRadius: 100,
+							height: 200,
+							width: 200,
+							backgroundColor: "#e8eaf6",
+							alignItems: "center",
+							justifyContent: "center",
+						}}>
+						<Feather name="user" color="black" size={100} />
+					</View>
+				)}
 			</TouchableOpacity>
 			<View>
 				<Text style={styles.username}>{username ? username.toUpperCase() : "No Username"}</Text>
-				<Text style={styles.balance}>Balance: {balance ? balance : "No balance"}</Text>
+				<Text style={styles.balance}>Balance: {balance ? balance.toLocaleString() : "No balance"}</Text>
 
 				{isImageSelected ? (
 					<Text style={styles.textLabel} onPress={handleUpdateImage}>
@@ -96,7 +104,7 @@ const ProfileCard = ({ username, image, balance }: UserCardProps) => {
 
 export default ProfileCard;
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const CONTENT_WIDTH = "85%";

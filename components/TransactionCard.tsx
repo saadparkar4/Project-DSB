@@ -13,26 +13,44 @@ interface TransactionCardProps {
 
 const TransactionCard = ({ transaction, setTransaction, displayTransaction }: TransactionCardProps) => {
 	return (
-		<View style={styles.viewCenter}>
-			<View>
-				<Text style={styles.balance}>
-					{transaction.amount ? transaction.amount : "0"},{transaction.createdAt ? transaction.createdAt.slice(0, 10) : "No Date"},
-					{transaction.type ? transaction.type : "No Type"}
-				</Text>
-			</View>
+		<View style={styles.row}>
+			<Text style={[styles.cell, styles.amountCell]} numberOfLines={2} ellipsizeMode="tail">
+				{transaction.amount ? transaction.amount.toLocaleString() : "0"}
+			</Text>
+			<Text style={styles.cell}>{transaction.createdAt ? transaction.createdAt.slice(0, 10) : "No Date"}</Text>
+			<Text style={styles.cell}>{transaction.type ? transaction.type : "No Type"}</Text>
 		</View>
 	);
 };
 
 export default TransactionCard;
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const BORDER_RADIUS = 16;
 const FONT_SIZE_LABEL = 16;
 
 const styles = StyleSheet.create({
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
+		backgroundColor: BG_COLOR,
+		borderBottomWidth: 1,
+		borderBottomColor: BORDER_COLOR,
+		paddingVertical: 8,
+		paddingHorizontal: 4,
+	},
+	cell: {
+		flex: 1,
+		fontSize: FONT_SIZE_LABEL,
+		color: PRIMARY_COLOR,
+		textAlign: "center",
+	},
+	amountCell: {
+		flexWrap: "wrap",
+		maxWidth: 120,
+	},
 	viewCenter: {
 		flex: 1,
 		justifyContent: "space-around",

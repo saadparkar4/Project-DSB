@@ -1,11 +1,10 @@
 import { deposit, withdraw } from "@/api";
 import { me } from "@/api/auth";
-import { deleteToken } from "@/api/storage";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const CONTENT_WIDTH = "85%";
@@ -75,73 +74,66 @@ export default function Index() {
 	return (
 		<View style={styles.viewCenter}>
 			<View style={styles.balanceCard}>
-				<Text style={styles.balanceDetails}> Your Available Balance is : </Text>
-				<Text style={styles.balanceDetails}>{data?.balance}</Text>
+				<Text style={styles.balanceTitle}>Your Available Balance</Text>
+				<Text style={styles.balanceAmount}>
+					{data?.balance?.toLocaleString()} <Text style={styles.currency}>KWD</Text>
+				</Text>
 			</View>
 
-			<View
-				style={{
-					flexDirection: "row",
-					height: "10%",
-					width: "100%",
-					justifyContent: "center",
-					alignItems: "center",
-					backgroundColor: "#dddddd",
-					gap: 40,
-					borderRadius: 20,
-					margin: 20,
-				}}>
-				{/* Withdraw Button */}
-				<TouchableOpacity onPress={() => handleToggle("withdraw")}>
-					<Text>Withdraw</Text>
+			<View style={styles.toggleRow}>
+				<TouchableOpacity
+					onPress={() => handleToggle("withdraw")}
+					style={[styles.toggleButton, !isWithdrawSelected && styles.toggleButtonActive]}
+					activeOpacity={0.8}>
+					<Text style={[styles.toggleButtonText, !isWithdrawSelected && styles.toggleButtonTextActive]}>Withdraw</Text>
 				</TouchableOpacity>
 				<Switch
-					trackColor={{ false: "#767577", true: "#81b0ff" }}
+					trackColor={{ false: "#b0b0b0", true: "#81b0ff" }}
 					thumbColor={isWithdrawSelected ? "#f5dd4b" : "#f4f3f4"}
 					ios_backgroundColor="#3e3e3e"
 					onValueChange={toggleSwitch}
 					value={isWithdrawSelected}
+					style={{ marginHorizontal: 8 }}
 				/>
-				{/* Deposit Button */}
-				<TouchableOpacity onPress={() => handleToggle("deposit")}>
-					<Text>Deposit</Text>
+				<TouchableOpacity
+					onPress={() => handleToggle("deposit")}
+					style={[styles.toggleButton, isWithdrawSelected && styles.toggleButtonActive]}
+					activeOpacity={0.8}>
+					<Text style={[styles.toggleButtonText, isWithdrawSelected && styles.toggleButtonTextActive]}>Deposit</Text>
 				</TouchableOpacity>
 			</View>
+
 			<View style={styles.transactionCard}>
-				{!isWithdrawSelected ? (
-					<View>
-						<Text>You have selected Withdraw</Text>
+				{isWithdrawSelected ? (
+					<View style={styles.formContainer}>
+						<Text style={styles.formTitle}>Withdraw Funds</Text>
 						<TextInput
 							placeholder="Withdraw Amount"
 							style={styles.input}
 							keyboardType="numeric"
 							onChangeText={(number) => setWithdrawAmount(Number(number))}
+							placeholderTextColor="#aaa"
 						/>
-						<TouchableOpacity onPress={handleWithdraw} style={styles.button}>
-							<Text style={{ color: "white", fontWeight: "bold" }}>Withdraw Amount</Text>
+						<TouchableOpacity onPress={handleWithdraw} style={styles.button} activeOpacity={0.85}>
+							<Text style={styles.buttonText}>Withdraw</Text>
 						</TouchableOpacity>
 					</View>
 				) : (
-					<View>
-						<Text>You have selected Deposit</Text>
+					<View style={styles.formContainer}>
+						<Text style={styles.formTitle}>Deposit Funds</Text>
 						<TextInput
 							placeholder="Deposit Amount"
 							style={styles.input}
 							keyboardType="numeric"
 							onChangeText={(number) => setDepositAmount(Number(number))}
+							placeholderTextColor="#aaa"
 						/>
-						<TouchableOpacity onPress={handleDeposit} style={styles.button}>
-							<Text style={{ color: "white", fontWeight: "bold" }}>Deposit Amount</Text>
+						<TouchableOpacity onPress={handleDeposit} style={styles.button} activeOpacity={0.85}>
+							<Text style={styles.buttonText}>Deposit</Text>
 						</TouchableOpacity>
 					</View>
 				)}
-				{/* You would typically render your Withdraw form/component here
-      Or your Deposit form/component here */}
 			</View>
-
-			<TouchableOpacity onPress={deleteToken} style={styles.submitButton}>
-				<Text style={{ color: "white", fontWeight: "bold" }}>Bye Bye Hab!b!</Text>
-			</TouchableOpacity>
 		</View>
 	);
 }
@@ -192,9 +184,71 @@ const styles = StyleSheet.create({
 		shadowRadius: 16.0,
 		elevation: 24,
 	},
-	balanceDetails: {
-		fontSize: 24,
+	balanceTitle: {
+		fontSize: 18,
 		fontWeight: "600",
+		color: PRIMARY_COLOR,
+		marginBottom: 2,
+		letterSpacing: 0.5,
+	},
+	balanceAmount: {
+		fontSize: 32,
+		fontWeight: "bold",
+		color: PRIMARY_COLOR,
+		marginBottom: 2,
+	},
+	currency: {
+		fontSize: 18,
+		color: "#888",
+		fontWeight: "500",
+	},
+	toggleRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#f0f2fa",
+		borderRadius: 16,
+		marginVertical: 18,
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+		gap: 10,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.08,
+		shadowRadius: 6,
+		elevation: 2,
+	},
+	toggleButton: {
+		paddingVertical: 8,
+		paddingHorizontal: 18,
+		borderRadius: 12,
+		backgroundColor: "#e3e7f7",
+	},
+	toggleButtonActive: {
+		backgroundColor: PRIMARY_COLOR,
+	},
+	toggleButtonText: {
+		color: PRIMARY_COLOR,
+		fontWeight: "600",
+		fontSize: 16,
+		letterSpacing: 0.2,
+	},
+	toggleButtonTextActive: {
+		color: "#fff",
+	},
+	formContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		width: "100%",
+		padding: 16,
+	},
+	formTitle: {
+		fontSize: 20,
+		fontWeight: "600",
+		color: PRIMARY_COLOR,
+		marginBottom: 12,
+		letterSpacing: 0.5,
 	},
 	input: {
 		borderWidth: 1.5,
@@ -207,34 +261,6 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		marginBottom: 8,
 	},
-	inputLabel: {
-		alignItems: "flex-start",
-		width: "100%",
-		padding: 10,
-		fontWeight: "bold",
-		fontSize: 20,
-	},
-	image: {
-		height: 120,
-		width: 120,
-		borderRadius: 60,
-		marginBottom: 24,
-		alignSelf: "center",
-		backgroundColor: "#e8eaf6",
-		borderWidth: 2,
-		borderColor: BORDER_COLOR,
-	},
-	submitButton: {
-		backgroundColor: PRIMARY_COLOR,
-		width: "100%",
-		height: BUTTON_HEIGHT,
-		borderRadius: BORDER_RADIUS,
-		alignItems: "center",
-		justifyContent: "center",
-		marginTop: 18,
-		marginBottom: 10,
-		elevation: 2,
-	},
 	button: {
 		backgroundColor: PRIMARY_COLOR,
 		width: "100%",
@@ -243,5 +269,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginTop: 10,
 		marginBottom: 10,
+	},
+	buttonText: {
+		color: "#fff",
+		fontWeight: "bold",
+		fontSize: 18,
+		letterSpacing: 0.5,
 	},
 });

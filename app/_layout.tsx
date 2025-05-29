@@ -3,7 +3,6 @@ import AuthContext from "@/context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
 
 export default function RootLayout() {
 	//Create a state to keep track of the user's authentication status
@@ -17,15 +16,17 @@ export default function RootLayout() {
 
 		if (token) {
 			setIsAuthenticated(true);
+			setReady(true);
 		}
-		setReady(true);
 	};
 
-	if (!ready) {
-		<View>
-			<Text>LOADING APP</Text>
-		</View>;
-	}
+	// if (!ready) {
+	// 	return (
+	// 		<View>
+	// 			<Text>LOADING APP</Text>
+	// 		</View>
+	// 	);
+	// }
 
 	// /Login -> auth/login
 	// useEffect will run the check token code the second my app launches or reloads

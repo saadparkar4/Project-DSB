@@ -63,7 +63,7 @@ const UserProfileCard = ({ username, image, balance }: UserCardProps) => {
 			<View style={styles.viewCenter}>
 				<Feather name="user" color="black" size={24} />
 				<Text style={styles.username}>{username ? username.toUpperCase() : "No Username"}</Text>
-				<Text style={styles.balance}>Balance: {balance ? balance : "No balance"}</Text>
+				<Text style={styles.balance}>Balance: {balance ? balance.toLocaleString() : "No balance"}</Text>
 				<Image
 					style={{ borderRadius: 100 }}
 					source={{
@@ -102,7 +102,7 @@ const UserProfileCard = ({ username, image, balance }: UserCardProps) => {
 
 export default UserProfileCard;
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const CONTENT_WIDTH = "85%";

@@ -1,11 +1,11 @@
 import { signin } from "@/api/auth";
 import AuthContext from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect, useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const INPUT_HEIGHT = 48;
@@ -17,9 +17,18 @@ const FONT_SIZE_TITLE = 28;
 const BUTTON_HEIGHT = 48;
 
 export default function Index() {
+	const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+	if (isAuthenticated) {
+		return <Redirect href={"/"} />;
+	}
+	// const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+	// const router = useRouter();
+	// if (isAuthenticated) {
+	// 	router.replace("/");
+	// 	return null;
+	// }
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 	const router = useRouter();
 
 	const { mutate, data } = useMutation({

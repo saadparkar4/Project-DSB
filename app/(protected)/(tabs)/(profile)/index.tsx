@@ -1,10 +1,9 @@
 import { me } from "@/api/auth";
-import { deleteToken } from "@/api/storage";
 import ProfileCard from "@/components/ProfileCard";
 import { useQuery } from "@tanstack/react-query";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-const PRIMARY_COLOR = "#1a237e";
+const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
 const BORDER_COLOR = "#c5cae9";
 const CONTENT_WIDTH = "85%";
@@ -14,7 +13,7 @@ const FONT_SIZE_TITLE = 28;
 const BUTTON_HEIGHT = 48;
 
 export default function Index() {
-	const { data } = useQuery({
+	const { data, isLoading, isFetching } = useQuery({
 		queryKey: ["myprofile"],
 		queryFn: me,
 	});
@@ -22,11 +21,7 @@ export default function Index() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.viewCenter}>
-				<ProfileCard username={data?.username} image={data?.image} balance={data?.balance} />
-
-				<TouchableOpacity onPress={deleteToken} style={styles.submitButton}>
-					<Text style={{ color: "white", fontWeight: "bold" }}>Bye Bye Hab!b!</Text>
-				</TouchableOpacity>
+				<ProfileCard username={data?.username} image={data?.image} balance={data?.balance?.toLocaleString()} />
 			</View>
 		</View>
 	);
