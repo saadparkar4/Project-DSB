@@ -31,6 +31,9 @@ const Register = () => {
 	const [image, setImage] = useState<string | null>(null);
 	const [mistakes, setMistakes] = useState("");
 	const [checking, setChecking] = useState(false);
+	const [showDepositLink, setShowDepositLink] = useState(false);
+	const [depositLinkAmount, setDepositLinkAmount] = useState(0);
+	const [generatedLink, setGeneratedLink] = useState("");
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -91,6 +94,16 @@ const Register = () => {
 		setChecking(false);
 	};
 
+	const handleGenerateLink = () => {
+		if (!username || !depositLinkAmount) {
+			setMistakes("Please enter an amount to generate a link.");
+			return;
+		}
+		const link = `https://yourapp.com/deposit?username=${encodeURIComponent(username)}&amount=${depositLinkAmount}`;
+		setGeneratedLink(link);
+		setShowDepositLink(true);
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.viewCenter}>
@@ -115,6 +128,35 @@ const Register = () => {
 				<Text style={styles.footerText}>
 					Got account, <Link href="/(auth)/Login"> Login Hab!b! </Link>
 				</Text>
+				{/* Deposit link section */}
+				{!showDepositLink && (
+					<View style={{ width: "100%", marginBottom: 16 }}>
+						<Text style={styles.inputLabel}>Generate Deposit Link</Text>
+						<TextInput
+							placeholder="Amount to deposit"
+							style={styles.input}
+							keyboardType="numeric"
+							onChangeText={(text) => {
+								if (/^\d*$/.test(text)) setDepositLinkAmount(Number(text));
+							}}
+							value={depositLinkAmount ? String(depositLinkAmount) : ""}
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						<TouchableOpacity onPress={handleGenerateLink} style={styles.submitButton}>
+							<Text style={{ color: "white", fontWeight: "bold" }}>Generate Link</Text>
+						</TouchableOpacity>
+					</View>
+				)}
+				{showDepositLink && (
+					<View style={{ width: "100%", marginBottom: 16, alignItems: "center" }}>
+						<Text style={{ marginBottom: 8, color: PRIMARY_COLOR, fontWeight: "bold" }}>Share this link:</Text>
+						<Text selectable style={{ color: PRIMARY_COLOR, marginBottom: 8, textAlign: "center" }}>{generatedLink}</Text>
+						<TouchableOpacity onPress={() => setShowDepositLink(false)} style={styles.submitButton}>
+							<Text style={{ color: "white", fontWeight: "bold" }}>Create Another</Text>
+						</TouchableOpacity>
+					</View>
+				)}
 			</View>
 		</View>
 	);
