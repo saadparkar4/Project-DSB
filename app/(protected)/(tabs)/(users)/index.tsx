@@ -1,6 +1,7 @@
 import { allUsers } from "@/api/auth";
-import React from "react";
-import { ActivityIndicator, FlatList, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, FlatList, Text, TextInput, View } from "react-native";
+import { z } from "zod";
 
 import UserProfileCard from "@/components/UserProfileCard";
 import { useQuery } from "@tanstack/react-query";
@@ -25,8 +26,29 @@ export default function Index() {
 		queryFn: allUsers,
 	});
 
-	const [search, setSearch] = React.useState("");
-	const [visibleCount, setVisibleCount] = React.useState(40);
+	const [search, setSearch] = useState("");
+	const [visibleCount, setVisibleCount] = useState(40);
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
+
+	const checkSearchBox = z
+		.string()
+		.max(30, { message: "Search must be 30 characters or less." })
+		.refine((val) => !/^\-/.test(val), { message: "No negative values allowed in search." })
+		.refine((val) => /^\d*$/.test(val), { message: "Only numbers are allowed. No special characters." });
+
+	const lookForUser = (value: string) => {
+		setChecking(true);
+		const found = checkSearchBox.safeParse(value);
+		if (!found.success) {
+			setMistakes(found.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
+		setMistakes("");
+		setSearch(value);
+		setChecking(false);
+	};
 
 	// Filter and sort users
 	const filteredUsers = data
@@ -53,9 +75,15 @@ export default function Index() {
 					fontSize: 16,
 					width: "100%",
 				}}
-				value={search.toLowerCase()}
-				onChangeText={setSearch}
+				value={search}
+				onChangeText={(text) => {
+					if (/^\d*$/.test(text)) lookForUser(text);
+				}}
+				autoCapitalize="none"
+				autoCorrect={false}
+				enablesReturnKeyAutomatically
 			/>
+			{!!mistakes && <Text style={{ color: "#d32f2f", marginBottom: 8 }}>{mistakes}</Text>}
 			<FlatList
 				data={filteredUsers.slice(0, visibleCount)}
 				keyExtractor={(item) => item._id}

@@ -4,6 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
 const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
@@ -38,15 +39,67 @@ export default function Index() {
 	const [toDate, setToDate] = useState<Date | null>(null);
 	const [showFromPicker, setShowFromPicker] = useState(false);
 	const [showToPicker, setShowToPicker] = useState(false);
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
 
-	// Platform-specific fix for DateTimePicker on Windows/Android/Web
+	const dateRangeSchema = z
+		.object({
+			from: z.union([z.date(), z.null()]),
+			to: z.union([z.date(), z.null()]),
+		})
+		.refine(
+			(val) => {
+				if (val.from && val.to) {
+					return val.from <= val.to;
+				}
+				return true;
+			},
+			{ message: "From date must be before or same as To date." }
+		);
+
+	const checkSearch = z
+		.string()
+		.max(30, { message: "Search must be 30 letters or less." })
+		.refine((val) => !/^\-/.test(val), { message: "No minus sign please." })
+		.refine((val) => /^\d*$/.test(val), { message: "Only numbers are allowed. No special characters." });
+
+	const lookFor = (value: string) => {
+		setChecking(true);
+		const check = checkSearch.safeParse(value);
+		if (!check.success) {
+			setMistakes(check.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
+		setMistakes("");
+		setSearch(value);
+		setChecking(false);
+	};
+
+	// PHad to add code for fixing issues betwen windows & mobile functionality
 	const handleFromChange = (event: any, date: Date | undefined) => {
 		setShowFromPicker(false);
-		if (date) setFromDate(date);
+		if (date) {
+			const found = dateRangeSchema.safeParse({ from: date, to: toDate });
+			if (!found.success) {
+				setMistakes(found.error.errors[0].message);
+				return;
+			}
+			setMistakes("");
+			setFromDate(date);
+		}
 	};
 	const handleToChange = (event: any, date: Date | undefined) => {
 		setShowToPicker(false);
-		if (date) setToDate(date);
+		if (date) {
+			const found = dateRangeSchema.safeParse({ from: fromDate, to: date });
+			if (!found.success) {
+				setMistakes(found.error.errors[0].message);
+				return;
+			}
+			setMistakes("");
+			setToDate(date);
+		}
 	};
 
 	// Filter and sort transactions based on date, filterType and search
@@ -87,8 +140,15 @@ export default function Index() {
 						style={{ marginLeft: 8, marginRight: 8 }}
 						value={fromDate ? fromDate.toISOString().slice(0, 10) : ""}
 						onChange={(e) => {
+							const picked = e.target.value ? new Date(e.target.value) : null;
+							const found = dateRangeSchema.safeParse({ from: picked, to: toDate });
+							if (!found.success) {
+								setMistakes(found.error.errors[0].message);
+								return;
+							}
+							setMistakes("");
 							setShowFromPicker(false);
-							setFromDate(e.target.value ? new Date(e.target.value) : null);
+							setFromDate(picked);
 						}}
 					/>
 				) : null}
@@ -110,8 +170,15 @@ export default function Index() {
 						style={{ marginLeft: 8, marginRight: 8 }}
 						value={toDate ? toDate.toISOString().slice(0, 10) : ""}
 						onChange={(e) => {
+							const picked = e.target.value ? new Date(e.target.value) : null;
+							const found = dateRangeSchema.safeParse({ from: fromDate, to: picked });
+							if (!found.success) {
+								setMistakes(found.error.errors[0].message);
+								return;
+							}
+							setMistakes("");
 							setShowToPicker(false);
-							setToDate(e.target.value ? new Date(e.target.value) : null);
+							setToDate(picked);
 						}}
 					/>
 				) : null}
@@ -120,16 +187,28 @@ export default function Index() {
 						onPress={() => {
 							setFromDate(null);
 							setToDate(null);
+							setMistakes("");
 						}}
 						style={[styles.filterButton, { backgroundColor: "#eee", marginLeft: 8 }]}>
 						<Text style={{ color: "#c00" }}>Clear</Text>
 					</TouchableOpacity>
 				)}
 			</View>
+			{!!mistakes && <Text style={{ color: "#d32f2f", marginBottom: 8 }}>{mistakes}</Text>}
 			<View style={{ alignItems: "center", marginBottom: 10 }}>
 				{/* Search Input */}
-				<TextInput placeholder="Search for amount" style={styles.searchInput} onChangeText={(value) => setSearch(value)} />
+				<TextInput
+					placeholder="Search for amount"
+					style={styles.searchInput}
+					onChangeText={(text) => {
+						if (/^\d*$/.test(text)) lookFor(text);
+					}}
+					value={search}
+					autoCapitalize="none"
+					autoCorrect={false}
+				/>
 			</View>
+			{!!mistakes && <Text style={{ color: "#d32f2f", marginBottom: 8 }}>{mistakes}</Text>}
 			<ScrollView style={styles.viewCenter}>
 				{isLoading || isFetching ? (
 					<View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 40 }}>

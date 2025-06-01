@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
 interface UserCardProps {
 	image: string;
@@ -22,7 +23,19 @@ const UserProfileCard = ({ username, image, balance }: UserCardProps) => {
 	});
 
 	const [transferAmount, setTransferAmount] = useState<number | 0>(0);
-	const { mutate: transferMutate, isSuccess: isDepositSuccess } = useMutation({
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
+
+	const checkTransferMoney = z.object({
+		amount: z
+			.number()
+			.min(1, { message: "Please enter a transfer amount greater than 0." })
+			.max(9999999, { message: "Transfer amount must be less than 10 million." })
+			.refine((val) => val === Math.abs(val), { message: "No negative numbers allowed." })
+			.refine((val) => /^\d+$/.test(String(val)), { message: "Only numbers are allowed. No special characters." }),
+	});
+
+	const { mutate: sendMoney, isSuccess: isTransferSuccess } = useMutation({
 		mutationKey: ["Transfer Funds"],
 		mutationFn: () => transferFunds(username, transferAmount),
 
@@ -35,16 +48,25 @@ const UserProfileCard = ({ username, image, balance }: UserCardProps) => {
 		},
 	});
 
-	const handleTransfer = () => {
-		transferMutate();
+	const trySendMoney = () => {
+		setMistakes("");
+		setChecking(true);
+		const found = checkTransferMoney.safeParse({ amount: transferAmount });
+		if (!found.success) {
+			setMistakes(found.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
+		sendMoney();
+		setChecking(false);
 	};
 
 	useEffect(() => {
-		if (isDepositSuccess) {
+		if (isTransferSuccess) {
 			// Trigger a refetch of the profile data
 			refetchProfile();
 		}
-	}, [isDepositSuccess, refetchProfile]);
+	}, [isTransferSuccess, refetchProfile]);
 
 	const [isTransaction, setIsTransactionSelected] = useState(false); // Default to Withdraw
 
@@ -83,14 +105,19 @@ const UserProfileCard = ({ username, image, balance }: UserCardProps) => {
 			)}
 			{isTransaction ? (
 				<View>
+					{!!mistakes && <Text style={{ color: "#d32f2f", marginBottom: 8 }}>{mistakes}</Text>}
 					<TextInput
 						placeholder="Transfer Amount"
 						style={styles.input}
 						keyboardType="numeric"
-						onChangeText={(number) => setTransferAmount(Number(number))}
+						onChangeText={(number) => {
+							if (/^\d*$/.test(number)) setTransferAmount(Number(number));
+						}}
+						autoCapitalize="none"
+						autoCorrect={false}
 					/>
-					<TouchableOpacity style={styles.submitButton} onPress={handleTransfer}>
-						<Text style={{ color: "white", fontWeight: "bold" }}>Transfer</Text>
+					<TouchableOpacity style={styles.submitButton} onPress={trySendMoney} disabled={checking}>
+						<Text style={{ color: "white", fontWeight: "bold" }}>{checking ? "Checking..." : "Transfer"}</Text>
 					</TouchableOpacity>
 				</View>
 			) : (

@@ -3,6 +3,7 @@ import { me } from "@/api/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
 const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
@@ -19,7 +20,8 @@ export default function Index() {
 		queryFn: me,
 	});
 	const [isWithdrawSelected, setIsWithdrawSelected] = useState(true); // Default to Withdraw
-
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
 	const toggleSwitch = () => setIsWithdrawSelected((previousState) => !previousState);
 
 	const handleToggle = (transactionType: any) => {
@@ -31,10 +33,28 @@ export default function Index() {
 	};
 
 	const [depositAmount, setDepositAmount] = useState<number | 0>(0);
+	const [withdrawAmount, setWithdrawAmount] = useState<number | 0>(0);
+
+	const checkDepositMoney = z.object({
+		amount: z
+			.number()
+			.min(1, { message: "Please enter a deposit amount greater than 0." })
+			.max(9999999, { message: "Deposit amount must be less than 10 million." })
+			.refine((val) => val === Math.abs(val), { message: "No negative numbers allowed." })
+			.refine((val) => /^\d+$/.test(String(val)), { message: "Only numbers are allowed. No special characters." }),
+	});
+	const checkWithdrawMoney = z.object({
+		amount: z
+			.number()
+			.min(1, { message: "Please enter a withdraw amount greater than 0." })
+			.max(9999999, { message: "Withdraw amount must be less than 10 million." })
+			.refine((val) => val === Math.abs(val), { message: "No negative numbers allowed." })
+			.refine((val) => /^\d+$/.test(String(val)), { message: "Only numbers are allowed. No special characters." }),
+	});
+
 	const { mutate: depositMutate, isSuccess: isDepositSuccess } = useMutation({
 		mutationKey: ["Deposit"],
 		mutationFn: () => deposit(depositAmount),
-
 		onSuccess: () => {
 			alert("Deposited hab!b!...");
 		},
@@ -43,11 +63,18 @@ export default function Index() {
 		},
 	});
 
-	const handleDeposit = () => {
+	const tryDeposit = () => {
+		setMistakes("");
+		setChecking(true);
+		const found = checkDepositMoney.safeParse({ amount: depositAmount });
+		if (!found.success) {
+			setMistakes(found.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
 		depositMutate();
+		setChecking(false);
 	};
-
-	const [withdrawAmount, setWithdrawAmount] = useState<number | 0>(0);
 
 	const { mutate: withdrawMutate, isSuccess: isWithdrawSuccess } = useMutation({
 		mutationKey: ["Withdraw"],
@@ -60,8 +87,17 @@ export default function Index() {
 		},
 	});
 
-	const handleWithdraw = () => {
+	const tryWithdraw = () => {
+		setMistakes("");
+		setChecking(true);
+		const found = checkWithdrawMoney.safeParse({ amount: withdrawAmount });
+		if (!found.success) {
+			setMistakes(found.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
 		withdrawMutate();
+		setChecking(false);
 	};
 
 	useEffect(() => {
@@ -107,29 +143,39 @@ export default function Index() {
 				{isWithdrawSelected ? (
 					<View style={styles.formContainer}>
 						<Text style={styles.formTitle}>Withdraw Funds</Text>
+						<Text style={{ color: "#d32f2f", marginBottom: mistakes ? 8 : 0 }}>{mistakes}</Text>
 						<TextInput
 							placeholder="Withdraw Amount"
 							style={styles.input}
 							keyboardType="numeric"
-							onChangeText={(number) => setWithdrawAmount(Number(number))}
+							onChangeText={(number) => {
+								if (/^\d*$/.test(number)) setWithdrawAmount(Number(number));
+							}}
+							autoCapitalize="none"
+							autoCorrect={false}
 							placeholderTextColor="#aaa"
 						/>
-						<TouchableOpacity onPress={handleWithdraw} style={styles.button} activeOpacity={0.85}>
-							<Text style={styles.buttonText}>Withdraw</Text>
+						<TouchableOpacity onPress={tryWithdraw} style={styles.button} activeOpacity={0.85} disabled={checking}>
+							<Text style={styles.buttonText}>{checking ? "Checking..." : "Withdraw"}</Text>
 						</TouchableOpacity>
 					</View>
 				) : (
 					<View style={styles.formContainer}>
 						<Text style={styles.formTitle}>Deposit Funds</Text>
+						<Text style={{ color: "#d32f2f", marginBottom: mistakes ? 8 : 0 }}>{mistakes}</Text>
 						<TextInput
 							placeholder="Deposit Amount"
 							style={styles.input}
 							keyboardType="numeric"
-							onChangeText={(number) => setDepositAmount(Number(number))}
+							onChangeText={(number) => {
+								if (/^\d*$/.test(number)) setDepositAmount(Number(number));
+							}}
+							autoCapitalize="none"
+							autoCorrect={false}
 							placeholderTextColor="#aaa"
 						/>
-						<TouchableOpacity onPress={handleDeposit} style={styles.button} activeOpacity={0.85}>
-							<Text style={styles.buttonText}>Deposit</Text>
+						<TouchableOpacity onPress={tryDeposit} style={styles.button} activeOpacity={0.85} disabled={checking}>
+							<Text style={styles.buttonText}>{checking ? "Checking..." : "Deposit"}</Text>
 						</TouchableOpacity>
 					</View>
 				)}

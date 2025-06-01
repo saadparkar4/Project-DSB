@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, Redirect, useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
 const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
@@ -21,17 +22,13 @@ export default function Index() {
 	if (isAuthenticated) {
 		return <Redirect href={"/"} />;
 	}
-	// const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
-	// const router = useRouter();
-	// if (isAuthenticated) {
-	// 	router.replace("/");
-	// 	return null;
-	// }
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
 	const router = useRouter();
 
-	const { mutate, data } = useMutation({
+	const { mutate, mutateAsync, data } = useMutation({
 		mutationKey: ["login"],
 		mutationFn: () => signin(username, password),
 		onSuccess: () => {
@@ -40,15 +37,46 @@ export default function Index() {
 			router.replace("/");
 			console.log("this workedd inside usuMtation", mutate);
 		},
-		onError: (error) => {
-			alert("Failed hab!b!");
-			console.log("this failed", mutate, error);
-		},
+		onError: () => {},
 	});
 
-	const handleLogin = () => {
-		mutate();
-		console.log("this worked", mutate);
+	// Layman zod schema
+	const checkForm = z.object({
+		user: z
+			.string()
+			.min(1, { message: "Please type your username." })
+			.max(20, { message: "Username must be 20 letters or less." })
+			.regex(/^[a-zA-Z0-9\/_-]+$/, { message: "Username can only use a-z, A-Z, 0-9, /, -, _" }),
+		pass: z
+			.string()
+			.min(6, { message: "Password needs 6 letters at least." })
+			.max(20, { message: "Password must be 20 letters or less." })
+			.regex(/^[a-zA-Z0-9\/_-]+$/, { message: "Password can only use a-z, A-Z, 0-9, /, -, _" }),
+	});
+
+	const tryLogin = async () => {
+		setMistakes("");
+		setChecking(true);
+		const check = checkForm.safeParse({ user: username, pass: password });
+		if (!check.success) {
+			setMistakes(check.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
+		try {
+			await mutateAsync();
+		} catch (error: any) {
+			if (error?.response?.data?.message?.toLowerCase().includes("not found")) {
+				setMistakes("User not found");
+			} else if (error?.response?.data?.message?.toLowerCase().includes("password")) {
+				setMistakes("Incorrect password");
+			} else {
+				setMistakes("Login failed. Please try again.");
+			}
+			setChecking(false);
+			return;
+		}
+		setChecking(false);
 	};
 
 	return (
@@ -67,19 +95,29 @@ export default function Index() {
 			</View>
 
 			<View style={styles.viewCenter}>
+				<Text style={{ color: "#d32f2f", marginBottom: mistakes ? 8 : 0 }}>{mistakes}</Text>
+			</View>
+
+			<View style={styles.viewCenter}>
 				<Text style={styles.inputLabel}>Username</Text>
-				<TextInput placeholder="Username" style={styles.input} onChangeText={(text) => setUsername(text.toLowerCase())}></TextInput>
+				<TextInput placeholder="Username" style={styles.input} onChangeText={(text) => setUsername(text.toLowerCase())} value={username} />
 			</View>
 
 			<View style={styles.viewCenter}>
 				<Text style={styles.inputLabel}>Password</Text>
-				<TextInput placeholder="Password" style={styles.input} onChangeText={(text) => setPassword(text.toLowerCase())}></TextInput>
+				<TextInput
+					placeholder="Password"
+					style={styles.input}
+					onChangeText={(text) => setPassword(text.toLowerCase())}
+					value={password}
+					secureTextEntry
+				/>
 			</View>
 
 			<View>
 				<View style={styles.viewCenter}>
-					<TouchableOpacity onPress={handleLogin} style={styles.submitButton}>
-						<Text style={{ color: "white", fontWeight: "bold" }}>Login Hab!b!</Text>
+					<TouchableOpacity onPress={tryLogin} style={styles.submitButton} disabled={checking}>
+						<Text style={{ color: "white", fontWeight: "bold" }}>{checking ? "Checking..." : "Login Hab!b!"}</Text>
 					</TouchableOpacity>
 					<Text>
 						No account, <Link href="/(auth)/Register"> Register Hab!b! </Link>

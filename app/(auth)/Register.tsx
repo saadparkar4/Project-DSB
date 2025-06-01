@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Link, useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
 const PRIMARY_COLOR = "#000042";
 const BG_COLOR = "#f5f6fa";
@@ -28,6 +29,8 @@ const Register = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [image, setImage] = useState<string | null>(null);
+	const [mistakes, setMistakes] = useState("");
+	const [checking, setChecking] = useState(false);
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -42,9 +45,22 @@ const Register = () => {
 		}
 	};
 
-	// useMutation -> fn: signup (name, password, image) -> succesfull? setIsAuth(true) & go to home
+	// Layman zod schema for register
+	const checkForm = z.object({
+		user: z
+			.string()
+			.min(1, { message: "Please type your username." })
+			.max(20, { message: "Username must be 20 characters or less." })
+			.regex(/^[a-zA-Z0-9\/_-]+$/, { message: "Username can only use a-z, A-Z, 0-9, /, -, _" }),
+		pass: z
+			.string()
+			.min(6, { message: "Password must be at least 6 characters." })
+			.max(20, { message: "Password must be 20 characters or less." })
+			.regex(/^[a-zA-Z0-9\/_-]+$/, { message: "Password can only use a-z, A-Z, 0-9, /, -, _" }),
+		img: z.string().optional(),
+	});
 
-	const { mutate } = useMutation({
+	const { mutate, mutateAsync } = useMutation({
 		mutationKey: ["Register"],
 		mutationFn: () => signup(username, password, image || ""),
 		onSuccess: () => {
@@ -53,28 +69,48 @@ const Register = () => {
 			router.replace("/");
 			console.log("this was success");
 		},
-		onError: (error) => {
-			alert("Failed hab!b!");
-			console.log("this failed", mutate, error);
-		},
+		onError: () => {},
 	});
 
-	const handleRegister = () => {
-		mutate();
+	const tryRegister = async () => {
+		setMistakes("");
+		setChecking(true);
+		const lookFor = checkForm.safeParse({ user: username, pass: password, img: image || undefined });
+		if (!lookFor.success) {
+			setMistakes(lookFor.error.errors[0].message);
+			setChecking(false);
+			return;
+		}
+		try {
+			await mutateAsync();
+		} catch (error: any) {
+			setMistakes("Registration failed. Please try again.");
+			setChecking(false);
+			return;
+		}
+		setChecking(false);
 	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.viewCenter}>
 				<TouchableOpacity onPress={pickImage}>
 					<View style={styles.image}>{image && <Image style={styles.image} source={{ uri: image }} />}</View>
 				</TouchableOpacity>
+				<Text style={{ color: "#d32f2f", marginBottom: mistakes ? 8 : 0 }}>{mistakes}</Text>
 				<Text style={styles.inputLabel}>Username</Text>
-				<TextInput placeholder="Username" style={styles.input} onChangeText={(text) => setUsername(text.toLowerCase())} />
+				<TextInput placeholder="Username" style={styles.input} autoCapitalize="none" autoCorrect={false} onChangeText={(text) => setUsername(text)} />
 				<Text style={styles.inputLabel}>Password</Text>
-				<TextInput placeholder="Password" style={styles.input} onChangeText={(text) => setPassword(text.toLowerCase())} />
-
-				<TouchableOpacity onPress={handleRegister} style={styles.submitButton}>
-					<Text style={{ color: "white", fontWeight: "bold" }}>Register Hab!b!</Text>
+				<TextInput
+					placeholder="Password"
+					style={styles.input}
+					secureTextEntry
+					autoCapitalize="none"
+					autoCorrect={false}
+					onChangeText={(text) => setPassword(text)}
+				/>
+				<TouchableOpacity onPress={tryRegister} style={styles.submitButton} disabled={checking}>
+					<Text style={{ color: "white", fontWeight: "bold" }}>{checking ? "Checking..." : "Register Hab!b!"}</Text>
 				</TouchableOpacity>
 				<Text style={styles.footerText}>
 					Got account, <Link href="/(auth)/Login"> Login Hab!b! </Link>
